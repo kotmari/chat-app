@@ -14,6 +14,7 @@ import User from "./models/user.model.js"
 import { connectDB } from "./lib/db.js";
 import job from "./lib/cron.js";
 import clerkWebhook from "./webhooks/clerk.webhook.js"
+import authRoutes from "./routes/auth.route.js"
 
 const app = express();
 const PORT = process.env.PORT;
@@ -21,7 +22,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL
 
 const publicDir = path.join(process.cwd(), "public")
 
-app.use("/api/webhooks/clerk", express.raw({type: "application/json"}), clerkWebhook)
+app.use("/api/webhooks/clerk", express.raw({ type: "application/json" }), clerkWebhook);
 
 app.use(express.json())
 app.use(cors({
@@ -34,6 +35,8 @@ app.use(clerkMiddleware())
 app.get("/health", (req, res) => {
   res.status(200).json({ ok: true });
 });
+
+app.use("/api/auth", authRoutes)
 
 if(fs.existsSync(publicDir)) {
   app.use(express.static(publicDir))
